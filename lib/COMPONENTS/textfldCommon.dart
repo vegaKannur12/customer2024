@@ -26,7 +26,7 @@ class Widget_TextField extends StatelessWidget {
     return ValueListenableBuilder(
       valueListenable: obscureNotifier,
       builder: (context, isObscure, child) {
-        return TextFormField(keyboardType: keytype,
+        return TextFormField(keyboardType: keytype,style: TextStyle(color: Colors.white),
           controller: controller,
           obscureText: isPassword ? isObscure : false,
           validator: validator,
@@ -36,7 +36,7 @@ class Widget_TextField extends StatelessWidget {
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.all(Radius.circular(20.0)),
               borderSide: const BorderSide(
-                  color: Color.fromARGB(255, 119, 119, 119), width: 1),
+                  color: Colors.white, width: 1),
             ),
             errorBorder: OutlineInputBorder(
               borderRadius: BorderRadius.all(Radius.circular(20.0)),
@@ -45,14 +45,14 @@ class Widget_TextField extends StatelessWidget {
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.all(Radius.circular(20.0)),
               borderSide: const BorderSide(
-                  color: Color.fromARGB(255, 119, 119, 119), width: 1),
+                  color: Colors.white, width: 1),
             ),
-            prefixIcon: Icon(prefixIcon, size: 16),
+            prefixIcon: Icon(prefixIcon, size: 16,color: Colors.white),
             suffixIcon: isPassword
                 ? IconButton(
                     icon: Icon(
                       isObscure ? Icons.visibility_off : Icons.visibility,
-                      color: Theme.of(context).secondaryHeaderColor,
+                      color: Colors.white,
                     ),
                     onPressed: () {
                       obscureNotifier.value = !isObscure;
@@ -60,10 +60,11 @@ class Widget_TextField extends StatelessWidget {
                   )
                 : null,
             hintText: hintText,
-            hintStyle: const TextStyle(fontSize: 14),
+            hintStyle: const TextStyle(fontSize: 14,color: Colors.white),
           ),
         );
       },
     );
   }
 }
+

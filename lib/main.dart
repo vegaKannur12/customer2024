@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:customerapp/AUTHENTICATION/login.dart';
 import 'package:customerapp/CONTROLLER/controller.dart';
-import 'package:customerapp/SCREENS/dashboard.dart';
+import 'package:customerapp/SCREENS/DASHBOARD/dashboard.dart';
 import 'package:customerapp/SCREENS/splashscreen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -10,6 +10,7 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:phone_state/phone_state.dart';
+import 'package:system_alert_window/system_alert_window.dart';
 
 bool isLoggedIn = false;
 bool isRegistered = false;
@@ -21,6 +22,7 @@ Future<void> main() async {
   isRegistered = await checkRegistration();
   await requestPermission();
   await requestcallPermission();
+  await requestoverLayPermission();
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
@@ -36,6 +38,16 @@ Future<void> main() async {
     child: const MyApp(),
   ));
   // FlutterNativeSplash.remove();
+}
+
+// overlay entry point
+@pragma("vm:entry-point")
+void overlayMain() 
+{
+  WidgetsFlutterBinding.ensureInitialized();
+  runApp(const MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: Material(child: Text("My overlay"))));
 }
 
 checkRegistration() async {
@@ -98,6 +110,14 @@ requestPermission() async {
   }
 }
 
+requestoverLayPermission() async {
+  var status = SystemAlertWindow.requestPermissions;
+  if (status!=true) {
+    await SystemAlertWindow.requestPermissions;
+  } 
+  
+}
+
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
@@ -112,7 +132,7 @@ class MyApp extends StatelessWidget {
       home:
           // DashBoardScreen(),
           SplashScreen(),
-      // LoginPage(),
+      //  LoginPage(),
       // Registration(),
       // const HomePage(),
       // CartBag(),

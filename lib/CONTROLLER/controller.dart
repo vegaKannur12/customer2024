@@ -41,6 +41,10 @@ class Controller extends ChangeNotifier {
   bool isCustLoading = false;
   List<Map<String, dynamic>> customerList = [];
   List<Map<String, dynamic>> incomingCustomer = [];
+  List<Map<String, dynamic>> service_categ_list = [];
+  List<Map<String, dynamic>> pendingList_list = [];
+  bool isserCatList = false;
+  bool pendingListLoading = false;
   Future<RegistrationData?> postRegistration(
       String companyCode,
       String? fingerprints,
@@ -380,7 +384,15 @@ class Controller extends ChangeNotifier {
       } else if (type == "LOG") {
         await getLogin(context);
       } else if (type == "CUS") {
-        // await getServiceCustomers(context,"","","","");
+        await getServiceCustomers(context, "", "", "");
+      } else if (type == "INCOM") {
+        SharedPreferences pref = await SharedPreferences.getInstance();
+        String? ph = pref.getString("ph");
+        await getIncomingCall(context, ph);
+      } else if (type == "SERCAT") {
+        // SharedPreferences pref = await SharedPreferences.getInstance();
+        // String? ph = pref.getString("ph");
+        await getserviceCategoryList(context, '');
       } else {}
     } on PlatformException catch (e) {
       debugPrint(e.toString());
@@ -470,12 +482,14 @@ class Controller extends ChangeNotifier {
     notifyListeners();
   }
 
-  getServiceCustomers(BuildContext context, String? code) async {
+  getServiceCustomers(BuildContext context, String? code,String? p1,String? hcod ) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? stff = prefs.getString("Sm_id");
     isCustLoading = true;
     notifyListeners();
     try {
-      print("Flt_Ser_getcustomer '$code'");
-      var res = await SqlConn.readData("Flt_Ser_getcustomer '$code'");
+      print("Flt_Ser_getcustomer '$code','$stff'");
+      var res = await SqlConn.readData("Flt_Ser_getcustomer '$code','$stff'");
       // [{"H_CODE":"C@107", "H_NAME":"AAMI KANNUR", "H_ADDRESS":"", "H_PLACE":"KANNUR", "H_MOBILE":"", "STATUS":"PAID SERVICE", "EXPIRY":"2023-01-01 00:00:00.0", "EXP_DAYS":-585, "SERIES":"VEGA"}, {"H_CODE":"C@108", "H_NAME":"AAMI WEDDING EDAKARA", "H_ADDRESS":"EDAKARA", "H_PLACE":"NILAMBUR", "H_MOBILE":"", "STATUS":"PAID SERVICE", "EXPIRY":"2023-01-01 00:00:00.0", "EXP_DAYS":-585, "SERIES":"VEGA"}, {"H_CODE":"C@109", "H_NAME":"AAMI WEDDING VANDOOR", "H_ADDRESS":"VANDOOR", "H_PLACE":"NILAMBUR", "H_MOBILE":"", "STATUS":"WARRANTY", "EXPIRY":"2024-10-31 00:00:00.0", "EXP_DAYS":84, "SERIES":"VEGA"}];
 
 //       [{"H_CODE":"C@431", "H_NAME":"J J AGENCIES-ERNAKULAM", "H_ADDRESS":"11155, MOOKANOOR,AZHAKATVI ", "H_PLACE":"ERANAKULAM", "H_MOBILE":"",
@@ -484,12 +498,12 @@ class Controller extends ChangeNotifier {
       print(res.runtimeType);
       var map = jsonDecode(res);
       customerList.clear();
-      if (map != null) 
-      {
+      if (map != null) {
         for (var item in map) {
           customerList.add(item);
         }
       }
+      print("cus len---${customerList.length}");
       // customerList = [
       //   {
       //     "H_CODE": "C@106",
@@ -580,17 +594,17 @@ class Controller extends ChangeNotifier {
       //     "EXP_DAYS": -585,
       //     "SERIES": "VEGA"
       //   },
-        //  {
-        //   "H_CODE": "C@107",
-        //   "H_NAME": "AAMI KANNUR",
-        //   "H_ADDRESS": "",
-        //   "H_PLACE": "KANNUR",
-        //   "H_MOBILE": "9061155841",
-        //   "STATUS": "PAID SERVICE",
-        //   "EXPIRY": "2023-01-01 00:00:00.0",
-        //   "EXP_DAYS": -585,
-        //   "SERIES": "VEGA"
-        // }
+      //  {
+      //   "H_CODE": "C@107",
+      //   "H_NAME": "AAMI KANNUR",
+      //   "H_ADDRESS": "",
+      //   "H_PLACE": "KANNUR",
+      //   "H_MOBILE": "9061155841",
+      //   "STATUS": "PAID SERVICE",
+      //   "EXPIRY": "2023-01-01 00:00:00.0",
+      //   "EXP_DAYS": -585,
+      //   "SERIES": "VEGA"
+      // }
       // ];
       print("Incoming Customer---$res");
 
@@ -608,6 +622,99 @@ class Controller extends ChangeNotifier {
     }
   }
 
+  getserviceCategoryList(BuildContext context, String? para) async {
+    isserCatList = true;
+    notifyListeners();
+    try {
+      print("Flt_Ser_getreqcaregory '$para'");
+      var res = await SqlConn.readData("Flt_Ser_getreqcaregory '$para'");
+      print(res.runtimeType);
+      var map = jsonDecode(res);
+      service_categ_list.clear();
+      if (map != null) {
+        for (var item in map) {
+          service_categ_list.add(item);
+        }
+      }
+
+      print("Service cat.List---$res");
+
+      isserCatList = false;
+      notifyListeners();
+    } on PlatformException catch (e) {
+      debugPrint("PlatformException Service cat.List: ${e.message}");
+      debugPrint("not connected..Service cat.List..");
+      debugPrint(e.toString());
+      await showConnectionDialog(context, "SERCAT", e.toString());
+    } catch (e) {
+      print("An unexpected error occurred: $e");
+
+      return [];
+    }
+  }
+  
+  getPendingList(BuildContext context) async {
+    pendingListLoading = true;
+    notifyListeners();
+    try {
+      print("Flt_Ser_getPendingList");
+      var res = await SqlConn.readData("Flt_Ser_getPendingList");
+      print(res.runtimeType);
+      var map = jsonDecode(res);
+      pendingList_list.clear();
+      if (map != null) {
+        for (var item in map) {
+          pendingList_list.add(item);
+        }
+      }
+      print("pendingList_list---$res");
+      pendingListLoading = false;
+      notifyListeners();
+    } on PlatformException catch (e) {
+      debugPrint("PlatformException pendingList_list: ${e.message}");
+      debugPrint("not connected..pendingList_list..");
+      debugPrint(e.toString());
+      await showConnectionDialog(context, "PEND", e.toString());
+    } catch (e) {
+      print("An unexpected error occurred: $e");
+
+      return [];
+    }
+  }
+saveService(BuildContext context, String? date,String descr,String calledby) async {
+    // isserCatList = true;
+    notifyListeners();
+    try {
+       SharedPreferences prefs = await SharedPreferences.getInstance();
+       String? stff = prefs.getString("Sm_id");
+       String? h_code = prefs.getString("h_code");
+       String? req_id = prefs.getString("req_id");
+      print("Flt_Ser_save_service '$date','$stff','$h_code','$req_id','$descr','$calledby'");
+      var res = await SqlConn.readData("Flt_Ser_save_service 0,'$date','$stff','$h_code','$req_id','$descr','$calledby'");
+      print(res.runtimeType);
+      // var map = jsonDecode(res);
+      // service_categ_list.clear();
+      // if (map != null) {
+      //   for (var item in map) {
+      //     service_categ_list.add(item);
+      //   }
+      // }
+
+      print("Saved Service---$res");
+
+      // isserCatList = false;
+      notifyListeners();
+    } on PlatformException catch (e) {
+      debugPrint("PlatformException Save Service: ${e.message}");
+      debugPrint("not connected..Save Service..");
+      debugPrint(e.toString());
+      await showConnectionDialog(context, "SERCAT", e.toString());
+    } catch (e) {
+      print("An unexpected error occurred: $e");
+
+      return [];
+    }
+  }
   Future<void> showConnectionDialog(
       BuildContext context, String from, String er) {
     return showDialog(

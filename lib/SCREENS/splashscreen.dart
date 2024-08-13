@@ -1,7 +1,7 @@
 import 'package:customerapp/AUTHENTICATION/login.dart';
 import 'package:customerapp/AUTHENTICATION/registration.dart';
 import 'package:customerapp/CONTROLLER/controller.dart';
-import 'package:customerapp/SCREENS/dashboard.dart';
+import 'package:customerapp/SCREENS/DASHBOARD/dashboard.dart';
 import 'package:customerapp/SCREENS/db_selection.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';

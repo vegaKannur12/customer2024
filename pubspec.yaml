@@ -51,6 +51,8 @@ dependencies:
   lottie: ^1.4.2
   flutter_phone_direct_caller: ^2.1.1
   phone_state: ^1.0.4
+  # flutter_overlay_window: ^0.4.1
+  system_alert_window: ^1.2.1
 
   ############################
 dev_dependencies:
