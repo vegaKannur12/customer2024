@@ -43,7 +43,9 @@ class Controller extends ChangeNotifier {
   List<Map<String, dynamic>> incomingCustomer = [];
   List<Map<String, dynamic>> service_categ_list = [];
   List<Map<String, dynamic>> pendingList_list = [];
+  List<Map<String, dynamic>> service_list = [];
   bool isserCatList = false;
+  bool isserList = false;
   bool pendingListLoading = false;
   Future<RegistrationData?> postRegistration(
       String companyCode,
@@ -390,10 +392,14 @@ class Controller extends ChangeNotifier {
         String? ph = pref.getString("ph");
         await getIncomingCall(context, ph);
       } else if (type == "SERCAT") {
-        // SharedPreferences pref = await SharedPreferences.getInstance();
-        // String? ph = pref.getString("ph");
+       
         await getserviceCategoryList(context, '');
-      } else {}
+      } 
+      else if (type == "PEND") {
+       
+        await getPendingList(context);
+      } 
+      else {}
     } on PlatformException catch (e) {
       debugPrint(e.toString());
       debugPrint("not connected..init-YRDB..");
@@ -489,7 +495,7 @@ class Controller extends ChangeNotifier {
     notifyListeners();
     try {
       print("Flt_Ser_getcustomer '$code','$stff'");
-      var res = await SqlConn.readData("Flt_Ser_getcustomer '$code','$stff'");
+      var res = await SqlConn.readData("Flt_Ser_getcustomer '$code','$stff','$hcod'");
       // [{"H_CODE":"C@107", "H_NAME":"AAMI KANNUR", "H_ADDRESS":"", "H_PLACE":"KANNUR", "H_MOBILE":"", "STATUS":"PAID SERVICE", "EXPIRY":"2023-01-01 00:00:00.0", "EXP_DAYS":-585, "SERIES":"VEGA"}, {"H_CODE":"C@108", "H_NAME":"AAMI WEDDING EDAKARA", "H_ADDRESS":"EDAKARA", "H_PLACE":"NILAMBUR", "H_MOBILE":"", "STATUS":"PAID SERVICE", "EXPIRY":"2023-01-01 00:00:00.0", "EXP_DAYS":-585, "SERIES":"VEGA"}, {"H_CODE":"C@109", "H_NAME":"AAMI WEDDING VANDOOR", "H_ADDRESS":"VANDOOR", "H_PLACE":"NILAMBUR", "H_MOBILE":"", "STATUS":"WARRANTY", "EXPIRY":"2024-10-31 00:00:00.0", "EXP_DAYS":84, "SERIES":"VEGA"}];
 
 //       [{"H_CODE":"C@431", "H_NAME":"J J AGENCIES-ERNAKULAM", "H_ADDRESS":"11155, MOOKANOOR,AZHAKATVI ", "H_PLACE":"ERANAKULAM", "H_MOBILE":"",
@@ -560,13 +566,46 @@ class Controller extends ChangeNotifier {
       debugPrint(e.toString());
       // Navigator.pop(context);
       await showConnectionDialog(context, "CUS", e.toString());
-    } catch (e) {
+    } 
+    catch (e) {
       print("An unexpected error occurred: $e");
       // SqlConn.disconnect();
       return [];
     }
   }
-
+ saveServiceLog(BuildContext context, int? ser_id,String? date,int? sts_id ,String? note,String? amt) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? stff = prefs.getString("Sm_id");
+    isCustLoading = true;
+    notifyListeners();
+    try {
+      print("Flt_Ser_save_serviceLog 0,'$ser_id','$date','$stff',$sts_id,'$note','$amt'");
+      var res = await SqlConn.readData("Flt_Ser_save_serviceLog 0,$ser_id,'$date',$stff,$sts_id,'$note','$amt'");
+      print(res.runtimeType);
+      // var map = jsonDecode(res);
+      // customerList.clear();
+      // if (map != null) {
+      //   for (var item in map) {
+      //     customerList.add(item);
+      //   }
+      // }
+      print("save_serviceLog---$res");
+      isCustLoading = false;
+      notifyListeners();
+    } on PlatformException catch (e) {
+      debugPrint("PlatformException save_serviceLog: ${e.message}");
+      debugPrint("not connected..save_serviceLog..");
+      debugPrint(e.toString());
+      // Navigator.pop(context);
+      await showConnectionDialog(context, "SAVESERLOG", e.toString());
+    } 
+    catch (e) 
+    {
+      print("An unexpected error occurred: $e");
+      // SqlConn.disconnect();
+      return [];
+    }
+  }
   getIncomingCall(BuildContext context, String? ph) async {
     isCustLoading = true;
     notifyListeners();
@@ -653,6 +692,36 @@ class Controller extends ChangeNotifier {
     }
   }
   
+  getserviceList(BuildContext context, String? para, String? para1) async {
+    isserList = true;
+    notifyListeners();
+    try {
+      print("Flt_Ser_getDetails '$para','$para1'");
+      var res = await SqlConn.readData("Flt_Ser_getDetails '$para','$para1'");
+      print(res.runtimeType);
+      var map = jsonDecode(res);
+      service_list.clear();
+      if (map != null) {
+        for (var item in map) {
+          service_list.add(item);
+        }
+      }
+
+      print("ServiceList---$res");
+
+      isserList = false;
+      notifyListeners();
+    } on PlatformException catch (e) {
+      debugPrint("PlatformException Service List: ${e.message}");
+      debugPrint("not connected..Service List..");
+      debugPrint(e.toString());
+      await showConnectionDialog(context, "SERLIS", e.toString());
+    } catch (e) {
+      print("An unexpected error occurred: $e");
+
+      return [];
+    }
+  }
   getPendingList(BuildContext context) async {
     pendingListLoading = true;
     notifyListeners();

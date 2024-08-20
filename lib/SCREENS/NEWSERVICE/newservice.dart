@@ -1,4 +1,5 @@
 import 'package:customerapp/CONTROLLER/controller.dart';
+import 'package:customerapp/SCREENS/DASHBOARD/PENDING/servivepend.dart';
 import 'package:customerapp/SCREENS/DIALOGBoxes/incomdilog.dart';
 import 'package:customerapp/SCREENS/DIALOGBoxes/serviceCatdilog.dart';
 import 'package:customerapp/SCREENS/NEWSERVICE/serviceaddbotom.dart';
@@ -21,15 +22,15 @@ class AddNEWService extends StatefulWidget {
 class _AddNEWServiceState extends State<AddNEWService> {
   String? date;
   PhoneState status = PhoneState.nothing();
-  DialogIncoming incomdio=DialogIncoming();
-  DialogService serdio=DialogService();
+  DialogIncoming incomdio = DialogIncoming();
+  DialogService serdio = DialogService();
   @override
   void initState() {
     super.initState();
     setStream();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       Provider.of<Controller>(context, listen: false)
-          .getServiceCustomers(context, "","","");
+          .getServiceCustomers(context, "", "", "");
     });
     date = DateFormat('dd-MMM-yyyy').format(DateTime.now());
   }
@@ -47,7 +48,6 @@ class _AddNEWServiceState extends State<AddNEWService> {
           ) {
         String date = DateFormat('dd-MMM-yyyy').format(DateTime.now());
         print('Incoming number: ${event.number}, $date');
-       
 
         if (event.number != "null" &&
             event.number != " " &&
@@ -125,7 +125,8 @@ class _AddNEWServiceState extends State<AddNEWService> {
                         onChanged: (val) {
                           setState(() {
                             Provider.of<Controller>(context, listen: false)
-                                .getServiceCustomers(context, val.toString(),"","");
+                                .getServiceCustomers(
+                                    context, val.toString(), "", "");
                           });
                         },
                         decoration: InputDecoration(
@@ -139,9 +140,8 @@ class _AddNEWServiceState extends State<AddNEWService> {
                               setState(() {
                                 print("pressed");
                                 seacrh.clear();
-                                Provider.of<Controller>(context,
-                                        listen: false)
-                                    .getServiceCustomers(context, "","","");
+                                Provider.of<Controller>(context, listen: false)
+                                    .getServiceCustomers(context, "", "", "");
                                 // Provider.of<Controller>(context, listen: false)
                                 //     .searchRoom("");
                               });
@@ -171,19 +171,18 @@ class _AddNEWServiceState extends State<AddNEWService> {
                                     height: size.height * 0.7,
                                     child: Center(
                                         child: Lottie.asset(
-                                            "assets/noitem.json",
-                                            height: size.height * 0.3)))
+                                            "assets/datano.json",
+                                            height: size.height * 0.15)))
                                 : GridView.builder(
                                     shrinkWrap: true,
                                     physics: const ScrollPhysics(),
                                     itemCount: value.customerList.length,
                                     gridDelegate:
                                         SliverGridDelegateWithFixedCrossAxisCount(
-                                      crossAxisCount:
-                                          size.width >= 420 ? 2 : 1,
+                                      crossAxisCount: size.width >= 420 ? 2 : 1,
                                       crossAxisSpacing: 8,
                                       mainAxisSpacing: 8,
-                                      childAspectRatio: 0.9,
+                                      childAspectRatio: 1,
                                     ),
                                     itemBuilder: (context, index) {
                                       return customerWidget(size,
@@ -438,6 +437,34 @@ class _AddNEWServiceState extends State<AddNEWService> {
                                 onTap: () async {
                                   await Provider.of<Controller>(context,
                                           listen: false)
+                                      .getserviceList(context, '0',
+                                          list['H_CODE'].toString());
+
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            SERvicePendingList(
+                                              from: "cust",
+                                            )),
+                                  );
+                                },
+                                child: SizedBox(
+                                  height: 40,
+                                  width: 40,
+                                  child: Image.asset(
+                                    "assets/history.png",
+                                    fit: BoxFit.fitHeight,
+                                  ),
+                                ),
+                              ),
+                              SizedBox(
+                                width: 20,
+                              ),
+                              InkWell(
+                                onTap: () async {
+                                  await Provider.of<Controller>(context,
+                                          listen: false)
                                       .getserviceCategoryList(context, '');
                                   SharedPreferences prefs =
                                       await SharedPreferences.getInstance();
@@ -445,11 +472,12 @@ class _AddNEWServiceState extends State<AddNEWService> {
                                       list["H_CODE"].toString().trimLeft());
                                   prefs.setString("h_name",
                                       list["H_NAME"].toString().trimLeft());
-                                  serdio.showServiceCategoryDialog(context, "normal");
+                                  serdio.showServiceCategoryDialog(
+                                      context, "normal");
                                 },
                                 child: SizedBox(
-                                  height: 40,
-                                  width: 40,
+                                  height: 35,
+                                  width: 35,
                                   child: Image.asset(
                                     "assets/service.png",
                                     fit: BoxFit.fitHeight,
@@ -466,13 +494,14 @@ class _AddNEWServiceState extends State<AddNEWService> {
               ),
             ));
   }
+
   Future<void> _handleRefresh() async {
     // Simulate network fetch or database query
     await Future.delayed(Duration(seconds: 2));
     // Update the list of items and refresh the UI
     setState(() {
       Provider.of<Controller>(context, listen: false)
-          .getServiceCustomers(context, "","","");
+          .getServiceCustomers(context, "", "", "");
       print("Table Refreshed----");
       // items = List.generate(20, (index) => "Refreshed Item ${index + 1}");
     });

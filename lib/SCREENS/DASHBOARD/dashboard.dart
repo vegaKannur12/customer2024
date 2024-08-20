@@ -128,8 +128,9 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
                       Padding(
                         padding: EdgeInsets.only(top: 15, left: 15, right: 15),
                         child: InkWell(
-                          onTap: () async{
-                           await Provider.of<Controller>(context, listen: false)
+                          onTap: () async {
+                            await Provider.of<Controller>(context,
+                                    listen: false)
                                 .getPendingList(context);
                             Navigator.push(
                               context,
@@ -174,13 +175,14 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
                       ),
                       Padding(
                         padding: EdgeInsets.only(top: 15, left: 15, right: 15),
-                        child: InkWell(onTap: () {
-                          Navigator.push(
+                        child: InkWell(
+                          onTap: () {
+                            Navigator.push(
                               context,
                               MaterialPageRoute(
                                   builder: (context) => AddNEWService()),
                             );
-                        },
+                          },
                           child: Container(
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(21),
@@ -235,7 +237,7 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
     // Update the list of items and refresh the UI
     setState(() {
       Provider.of<Controller>(context, listen: false)
-          .getServiceCustomers(context, "","","");
+          .getServiceCustomers(context, "", "", "");
       print("Table Refreshed----");
       // items = List.generate(20, (index) => "Refreshed Item ${index + 1}");
     });

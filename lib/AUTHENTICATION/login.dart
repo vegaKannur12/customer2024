@@ -2,6 +2,7 @@ import 'package:customerapp/COMPONENTS/custom_snackbar.dart';
 import 'package:customerapp/COMPONENTS/popup_unreg.dart';
 import 'package:customerapp/COMPONENTS/textfldCommon.dart';
 import 'package:customerapp/CONTROLLER/controller.dart';
+import 'package:customerapp/SCREENS/DASHBOARD/PENDING/pending.dart';
 import 'package:customerapp/SCREENS/NEWSERVICE/newservice.dart';
 import 'package:customerapp/SCREENS/DASHBOARD/dashboard.dart';
 import 'package:flutter/material.dart';
@@ -279,7 +280,7 @@ class _LoginPageState extends State<LoginPage> {
                       Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => DashBoardScreen()));
+                              builder: (context) => PENDINGService()));
                     } else {
                       CustomSnackbar snackbar = CustomSnackbar();
                       // ignore: use_build_context_synchronously

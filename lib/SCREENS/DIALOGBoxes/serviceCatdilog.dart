@@ -43,8 +43,8 @@ class DialogService {
                         )
                       : value.service_categ_list.isEmpty
                           ? Center(
-                              child: Lottie.asset("assets/noitem.json",
-                                  height: size.height * 0.3))
+                              child: Lottie.asset("assets/datano.json",
+                                  height: size.height * 0.15))
                           : ListView.builder(
                               itemCount: value.service_categ_list.length,
                               shrinkWrap: true,

@@ -41,14 +41,14 @@ Future<void> main() async {
 }
 
 // overlay entry point
-@pragma("vm:entry-point")
-void overlayMain() 
-{
-  WidgetsFlutterBinding.ensureInitialized();
-  runApp(const MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: Material(child: Text("My overlay"))));
-}
+// @pragma("vm:entry-point")
+// void overlayMain() 
+// {
+//   WidgetsFlutterBinding.ensureInitialized();
+//   runApp(const MaterialApp(
+//       debugShowCheckedModeBanner: false,
+//       home: Material(child: Text("My overlay"))));
+// }
 
 checkRegistration() async {
   bool isAuthenticated = false;

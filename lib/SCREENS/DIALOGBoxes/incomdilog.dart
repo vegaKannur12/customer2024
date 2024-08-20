@@ -1,4 +1,5 @@
 import 'package:customerapp/CONTROLLER/controller.dart';
+import 'package:customerapp/SCREENS/DASHBOARD/PENDING/servivepend.dart';
 import 'package:customerapp/SCREENS/DIALOGBoxes/serviceCatdilog.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -8,9 +9,11 @@ import 'package:shared_preferences/shared_preferences.dart';
 class DialogIncoming {
   showIncomingCallCustomDialog(BuildContext context) async {
     Size size = MediaQuery.of(context).size;
-    DialogService serdio=DialogService();
+    DialogService serdio = DialogService();
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? phh = prefs.getString("ph");
+    await Provider.of<Controller>(context, listen: false)
+        .getIncomingCall(context, phh); //added on Aug 20
     print("siccccccccccc-${size.height / 1.5}");
     Dialog fancyDialog = Dialog(
       shape: RoundedRectangleBorder(
@@ -313,6 +316,62 @@ class DialogIncoming {
                                 children: [
                                   InkWell(
                                     onTap: () async {
+                                      //  await Provider.of<Controller>(
+                                      //                     context,
+                                      //                     listen: false)
+                                      //                 .getserviceList(
+                                      //                     context,
+                                      //                     value.pendingList_list[
+                                      //                             index]
+                                      //                             ['SERVICE_ID']
+                                      //                         .toString(),
+                                      //                     value.pendingList_list[
+                                      //                             index]
+                                      //                             ['CUSTOMER_ID']
+                                      //                         .toString());
+                                      await Provider.of<Controller>(context,
+                                              listen: false)
+                                          .getServiceCustomers(
+                                              context,
+                                              "",
+                                              "",
+                                              value.pendingList_list[index]
+                                                      ['H_CODE']
+                                                  .toString());
+
+                                      await Provider.of<Controller>(context,
+                                              listen: false)
+                                          .getserviceList(
+                                              context,
+                                              '0',
+                                              value.incomingCustomer[index]
+                                                      ['H_CODE']
+                                                  .toString());
+
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                SERvicePendingList(
+                                                  from: "pending",
+                                                ),
+                                                ),
+                                      );
+                                    },
+                                    child: SizedBox(
+                                      height: 40,
+                                      width: 40,
+                                      child: Image.asset(
+                                        "assets/history.png",
+                                        fit: BoxFit.fitHeight,
+                                      ),
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    width: 20,
+                                  ),
+                                  InkWell(
+                                    onTap: () async {
                                       await Provider.of<Controller>(context,
                                               listen: false)
                                           .getserviceCategoryList(context, '');
@@ -411,5 +470,4 @@ class DialogIncoming {
     showDialog(
         context: context, builder: (BuildContext context) => fancyDialog);
   }
-  
 }

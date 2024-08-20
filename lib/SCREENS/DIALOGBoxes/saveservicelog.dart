@@ -1,40 +1,34 @@
 import 'package:customerapp/CONTROLLER/controller.dart';
-import 'package:customerapp/SCREENS/DASHBOARD/PENDING/pending.dart';
-import 'package:customerapp/SCREENS/DASHBOARD/dashboard.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
-class ServiceADDBottomSheet {
-  // String? selected;
+class ServiceLOGBottomSheet {
   ValueNotifier<bool> visible = ValueNotifier(false);
   TextEditingController note = TextEditingController();
-  TextEditingController called = TextEditingController();
+  TextEditingController amt = TextEditingController();
 
-  showServiceADDMoadlBottomsheet(
-    List<Map<String, dynamic>> list,
+  showServiceLOGMoadlBottomsheet(
+    int ser_id,
     BuildContext context,
     Size size,
-    int index,
-
-    // TextEditingController dec_ctrl,
-    String? date,
-    String from,
   ) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String? cusnm = prefs.getString("h_name");
-
+    String? datenow = DateFormat('dd-MMM-yyyy').format(DateTime.now());
+    List<Map<String, dynamic>> ll = [
+      {"Key": -1, "val": "CANCELLED"},
+      {"Key": 0, "val": "PENDING"},
+      {"Key": 1, "val": "MODIFYING"},
+      {"Key": 2, "val": "MODIFICATION COMPLETED"},
+      {"Key": 3, "val": "JOB CARD"},
+      {"Key": 4, "val": "SERVICE COMPLETED"},
+    ];
+    Map<String, dynamic>? selectedValue;
     return showModalBottomSheet(
         isScrollControlled: true,
         context: context,
         builder: (BuildContext context) {
-          print("param---$index--");
-          if (from=="incoming") {
-            String? ph = prefs.getString("ph");
-            print("ph=====$ph");
-            called.text=ph.toString();
-          }
+          print("param---$ser_id--");
           return Consumer<Controller>(
             builder: (context, value, child) {
               return SingleChildScrollView(
@@ -63,50 +57,67 @@ class ServiceADDBottomSheet {
                                 children: [
                                   Padding(
                                     padding: const EdgeInsets.symmetric(
-                                        vertical: 10, horizontal: 10),
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        Text(
-                                          cusnm
-                                              .toString()
-                                              .trimLeft()
-                                              .toUpperCase(),
-                                          style: TextStyle(
-                                            fontSize: 18,
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.blue,
-                                          ),
+                                        vertical: 6, horizontal: 5),
+                                    child: Container(
+                                      width: size.width / 1.1,
+                                      // width: 250,
+                                      decoration: BoxDecoration(
+                                          shape: BoxShape.rectangle),
+                                      child: DropdownButtonFormField<
+                                          Map<String, dynamic>>(
+                                        decoration: InputDecoration(
+                                            labelStyle:
+                                                TextStyle(color: Colors.black),
+                                            border: OutlineInputBorder(
+                                              borderRadius: BorderRadius.all(
+                                                  Radius.circular(20.0)),
+                                              borderSide: const BorderSide(
+                                                  color: Colors.black,
+                                                  width: 1),
+                                            ),
+                                            enabledBorder: OutlineInputBorder(
+                                              borderRadius: BorderRadius.all(
+                                                  Radius.circular(20.0)),
+                                              borderSide: const BorderSide(
+                                                  color: Colors.black,
+                                                  width: 1),
+                                            ),
+                                            focusedBorder: OutlineInputBorder(
+                                              borderRadius: BorderRadius.all(
+                                                  Radius.circular(20.0)),
+                                              borderSide: const BorderSide(
+                                                  color: Colors.black,
+                                                  width: 1),
+                                            ),
+                                            errorBorder: OutlineInputBorder(
+                                              borderRadius: BorderRadius.all(
+                                                  Radius.circular(20.0)),
+                                              borderSide: const BorderSide(
+                                                  color: Colors.red, width: 1),
+                                            )),
+                                        isExpanded: true,
+                                        hint: Text(
+                                          "Status",
+                                          style: TextStyle(color: Colors.black),
                                         ),
-                                      ],
-                                    ),
-                                  ),
-                                  Padding(
-                                       padding: const EdgeInsets.symmetric(
-                                        vertical: 10, horizontal: 10),
-                                    child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          list[index]["Req_Name"]
-                                              .toString()
-                                              .trimLeft()
-                                              .toUpperCase(),
-                                          style: TextStyle(
-                                            fontSize:18,
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.black,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.only(
-                                        left: 20, right: 20),
-                                    child: Divider(
-                                      thickness: 2,
+                                        value: selectedValue,
+                                        style: TextStyle(color: Colors.black),
+                                        onChanged:
+                                            (Map<String, dynamic>? newValue) {
+                                          selectedValue = newValue;
+                                          print(selectedValue!["Key"]);
+                                        },
+                                        items: ll.map<
+                                                DropdownMenuItem<
+                                                    Map<String, dynamic>>>(
+                                            (Map<String, dynamic> item) {
+                                          return DropdownMenuItem<
+                                              Map<String, dynamic>>(
+                                            value: item,
+                                            child: Text(item['val']),
+                                          );
+                                        }).toList(),
+                                      ),
                                     ),
                                   ),
                                   Padding(
@@ -142,9 +153,9 @@ class ServiceADDBottomSheet {
                                         SizedBox(
                                           width: size.width / 1.1,
                                           child: TextFormField(
-                                            controller: called,
+                                            controller: amt,
                                             decoration: InputDecoration(
-                                              hintText: "Called By",
+                                              hintText: "Amount",
                                               border: OutlineInputBorder(
                                                 borderRadius:
                                                     BorderRadius.circular(20.0),
@@ -169,11 +180,16 @@ class ServiceADDBottomSheet {
                                                 await Provider.of<Controller>(
                                                         context,
                                                         listen: false)
-                                                    .saveService(
+                                                    .saveServiceLog(
                                                         context,
-                                                        date.toString(),
+                                                        ser_id,
+                                                        datenow,
+                                                        int.parse(
+                                                            selectedValue![
+                                                                    "Key"]
+                                                                .toString()),
                                                         note.text,
-                                                        called.text);
+                                                        amt.text);
                                                 Navigator.pop(context);
                                                 return showDialog(
                                                     context: context,
@@ -191,17 +207,18 @@ class ServiceADDBottomSheet {
                                                                 rootNavigator:
                                                                     true)
                                                             .pop(false);
-
-                                                        Navigator.of(context)
-                                                            .push(
-                                                          PageRouteBuilder(
-                                                              opaque:
-                                                                  false, // set to false
-                                                              pageBuilder: (_,
-                                                                      __,
-                                                                      ___) =>
-                                                                  PENDINGService()),
-                                                        );
+                                                        note.clear();
+                                                        amt.clear();
+                                                        // Navigator.of(context)
+                                                        //     .push(
+                                                        //   PageRouteBuilder(
+                                                        //       opaque:
+                                                        //           false, // set to false
+                                                        //       pageBuilder: (_,
+                                                        //               __,
+                                                        //               ___) =>
+                                                        //           DashBoardScreen()),
+                                                        // );
                                                       });
                                                       return AlertDialog(
                                                           backgroundColor:
@@ -209,7 +226,7 @@ class ServiceADDBottomSheet {
                                                           content: Row(
                                                             children: [
                                                               Text(
-                                                                'Service added',
+                                                                'Service Log added',
                                                                 style: TextStyle(
                                                                     color: Colors
                                                                         .white,
@@ -221,7 +238,7 @@ class ServiceADDBottomSheet {
                                                           ));
                                                     });
                                               },
-                                              child: Text("ADD"),
+                                              child: Text("ADD LOG"),
                                             ))
                                       ],
                                     ),
